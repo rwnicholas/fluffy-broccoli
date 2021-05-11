@@ -11,7 +11,6 @@ def valida_gtin(gtin):
     vec_mult = np.array([1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3])
     if len(gtin) == 13:
         vec_gtin = np.array(list(gtin[0:12]))
-        print(len(vec_gtin))
         produto_escalar = np.sum(vec_mult * vec_gtin.astype(int))
         prox_decimal = int(produto_escalar / 10) * 10 + 10
         resultado = prox_decimal - produto_escalar
@@ -36,7 +35,3 @@ def gtin_14_para_13(gtin14):
     resultado = resultado % 10
     gtin_13 = np.append(gtin_13, resultado)
     return ''.join(gtin_13)
-
-
-teste = valida_gtin('00000000010863')
-print(teste)
