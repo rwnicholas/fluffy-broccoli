@@ -5,12 +5,14 @@ from sentence_transformers import SentenceTransformer
 from sklearn.cluster import KMeans
 import pandas as pd
 import gtinFixer as gtf
+import validateCluster as valCluster
 
-data = pd.read_csv("data/produtos14.csv")
+data = pd.read_csv("data/produtos.csv")
 data['gtin'] = data['gtin'].apply(lambda x: gtf.valida_gtin(str(x)))
 data = data.dropna()
 data = data.reset_index(drop=True)
 
+k = data['gtin'].nunique(dropna=True)
 
 sentences = data['descp']
 
@@ -18,9 +20,6 @@ model = SentenceTransformer('neuralmind/bert-large-portuguese-cased')
 # model = SentenceTransformer('stsb-distilbert-base')
 
 embeddings = model.encode(sentences, show_progress_bar=True)
-
-k = 88241 # K Total
-# k = 8273
 
 clustering_model = KMeans(n_clusters=k)
 clustering_model.fit(embeddings)
@@ -33,3 +32,6 @@ for sentence_id, cluster_id in enumerate(cluster_assignment):
 for i, cluster in enumerate(clustered_sentences):
     result_conc = pd.concat(cluster)
     result_conc.to_csv("clusters/cluster" + str(i) + ".csv", index=False)
+
+
+print(valCluster.accClusters(k))
