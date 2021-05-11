@@ -4,8 +4,13 @@ from pandas.core.frame import DataFrame
 from sentence_transformers import SentenceTransformer
 from sklearn.cluster import KMeans
 import pandas as pd
+import gtinFixer as gtf
 
 data = pd.read_csv("data/produtos14.csv")
+data['gtin'] = data['gtin'].apply(lambda x: gtf.valida_gtin(str(x)))
+data = data.dropna()
+data = data.reset_index(drop=True)
+
 
 sentences = data['descp']
 
@@ -14,8 +19,8 @@ model = SentenceTransformer('neuralmind/bert-large-portuguese-cased')
 
 embeddings = model.encode(sentences, show_progress_bar=True)
 
-k = 8273
-# k = 5
+k = 88241 # K Total
+# k = 8273
 
 clustering_model = KMeans(n_clusters=k)
 clustering_model.fit(embeddings)
@@ -26,6 +31,5 @@ for sentence_id, cluster_id in enumerate(cluster_assignment):
     clustered_sentences[cluster_id].append(data.loc[[sentence_id]])
 
 for i, cluster in enumerate(clustered_sentences):
-    print("Cluster ", i+1)
     result_conc = pd.concat(cluster)
     result_conc.to_csv("clusters/cluster" + str(i) + ".csv", index=False)
