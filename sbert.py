@@ -2,7 +2,8 @@
 
 from pandas.core.frame import DataFrame
 from sentence_transformers import SentenceTransformer
-from sklearn.cluster import KMeans
+# from sklearn.cluster import KMeans
+from FKMeans import FaissKMeans
 import pandas as pd
 import gtinFixer as gtf
 import validateCluster as valCluster
@@ -10,6 +11,8 @@ import validateCluster as valCluster
 data = pd.read_csv("data/produtos.csv")
 data['gtin'] = data['gtin'].apply(lambda x: gtf.valida_gtin(str(x)))
 data = data.dropna()
+data = data.reset_index(drop=True)
+data = data.sample(n=10**4)
 data = data.reset_index(drop=True)
 
 print("População:", data['gtin'].count())
@@ -25,7 +28,7 @@ model = SentenceTransformer('neuralmind/bert-large-portuguese-cased')
 
 embeddings = model.encode(sentences, show_progress_bar=True)
 
-clustering_model = KMeans(n_clusters=k)
+clustering_model = FaissKMeans(n_clusters=k)
 clustering_model.fit(embeddings)
 cluster_assignment = clustering_model.labels_
 
@@ -38,4 +41,4 @@ for i, cluster in enumerate(clustered_sentences):
     result_conc.to_csv("clusters/cluster" + str(i) + ".csv", index=False)
 
 
-print(valCluster.accClusters(k))
+print("Acurácia média:", valCluster.accClusters(k))
