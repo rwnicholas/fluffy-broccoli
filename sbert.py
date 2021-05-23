@@ -23,14 +23,15 @@ print("Número de Clusters:", k)
 
 sentences = data['descp']
 
-model = SentenceTransformer('neuralmind/bert-large-portuguese-cased')
-# model = SentenceTransformer('stsb-distilbert-base')
+# model = SentenceTransformer('neuralmind/bert-large-portuguese-cased')
+model = SentenceTransformer('stsb-distilbert-base', device='cuda')
 
 embeddings = model.encode(sentences, show_progress_bar=True)
 
 clustering_model = FaissKMeans(n_clusters=k)
-clustering_model.fit(embeddings)
+clustering_model.run_faiss_gpu(embeddings, ngpu=1)
 cluster_assignment = clustering_model.labels_
+print(cluster_assignment)
 
 clustered_sentences = [[] for i in range(k)]
 for sentence_id, cluster_id in enumerate(cluster_assignment):
