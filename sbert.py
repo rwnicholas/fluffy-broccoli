@@ -12,8 +12,8 @@ data = pd.read_csv("data/produtos.csv")
 data['gtin'] = data['gtin'].apply(lambda x: gtf.valida_gtin(str(x)))
 data = data.dropna()
 data = data.reset_index(drop=True)
-data = data.sample(n=10**4)
-data = data.reset_index(drop=True)
+# data = data.sample(n=500000)
+# data = data.reset_index(drop=True)
 
 print("População:", data['gtin'].count())
 
@@ -23,8 +23,8 @@ print("Número de Clusters:", k)
 
 sentences = data['descp']
 
-# model = SentenceTransformer('neuralmind/bert-large-portuguese-cased')
-model = SentenceTransformer('stsb-distilbert-base', device='cuda')
+model = SentenceTransformer('neuralmind/bert-base-portuguese-cased', device='cuda')
+# model = SentenceTransformer('stsb-distilbert-base', device='cuda')
 
 embeddings = model.encode(sentences, show_progress_bar=True)
 
