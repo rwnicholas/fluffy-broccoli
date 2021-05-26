@@ -5,13 +5,12 @@ import numpy as np
 def accClusters(k):
     all_acc = 0
     tmp_k = k
-    amostra = 0
 
     for i in range(k):
         dataTmp = pd.read_csv("clusters/cluster" + str(i) +".csv")
+
         if dataTmp['gtin'].count() == 1:
             tmp_k-=1
-            amostra+=dataTmp['gtin'].count()
             continue
 
         uniques_gtin, count_gtin = np.unique(dataTmp['gtin'].values, return_counts=True)
@@ -19,5 +18,4 @@ def accClusters(k):
 
     all_acc/=tmp_k
     print("Valor de K:", tmp_k)
-    print("Amostra:", amostra)
     return all_acc
