@@ -12,8 +12,6 @@ data = pd.read_csv("data/produtos.csv")
 data['gtin'] = data['gtin'].apply(lambda x: gtf.valida_gtin(str(x)))
 data = data.dropna()
 data = data.reset_index(drop=True)
-# data = data.sample(n=500000)
-# data = data.reset_index(drop=True)
 
 print("População:", data['gtin'].count())
 
@@ -23,23 +21,26 @@ print("Número de Clusters:", k)
 
 sentences = data['descp']
 
-model = SentenceTransformer('neuralmind/bert-base-portuguese-cased', device='cuda')
+model = SentenceTransformer('neuralmind/bert-large-portuguese-cased', device='cuda')
 # model = SentenceTransformer('stsb-distilbert-base', device='cuda')
 
 embeddings = model.encode(sentences, show_progress_bar=True)
 
 clustering_model = FaissKMeans(n_clusters=k)
-clustering_model.run_faiss_gpu(embeddings, ngpu=1)
+clustering_model.run_faiss_gpu(embeddings, ngpu=2)
 cluster_assignment = clustering_model.labels_
-print(cluster_assignment)
 
 clustered_sentences = [[] for i in range(k)]
 for sentence_id, cluster_id in enumerate(cluster_assignment):
     clustered_sentences[cluster_id].append(data.loc[[sentence_id]])
 
-for i, cluster in enumerate(clustered_sentences):
+countK = 0
+for cluster in clustered_sentences:
+    if len(cluster) == 0:
+        continue
     result_conc = pd.concat(cluster)
-    result_conc.to_csv("clusters/cluster" + str(i) + ".csv", index=False)
+    result_conc.to_csv("clusters/cluster" + str(countK) + ".csv", index=False)
+    countK+=1
 
 
-print("Acurácia média:", valCluster.accClusters(k))
+print("Acurácia média:", valCluster.accClusters(countK))

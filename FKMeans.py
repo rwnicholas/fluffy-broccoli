@@ -30,9 +30,10 @@ class FaissKMeans:
         clus = faiss.Clustering(D, self.n_clusters)
         
         # otherwise the kmeans implementation sub-samples the training set
-        clus.max_points_per_centroid = 1000000
+        clus.max_points_per_centroid = 10000000
         
-        clus.niter = 10
+        clus.niter = self.max_iter
+        clus.nredo = self.n_init
         
         res = [faiss.StandardGpuResources() for i in range(ngpu)]
 
