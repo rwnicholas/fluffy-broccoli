@@ -2,7 +2,7 @@ import faiss
 import numpy as np
 
 class FaissKMeans:
-    def __init__(self, n_clusters=8, n_init=10, max_iter=300):
+    def __init__(self, n_clusters=8, n_init=1, max_iter=50):
         self.n_clusters = n_clusters
         self.n_init = n_init
         self.max_iter = max_iter

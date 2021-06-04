@@ -1,4 +1,0 @@
-População: 532433
-Número de Clusters: 81122
-Valor de K: 74604
-Acurácia média: 0.7210509860282306
