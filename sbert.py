@@ -22,7 +22,8 @@ print("Número de Clusters:", k)
 sentences = data['descp']
 
 model = SentenceTransformer('neuralmind/bert-large-portuguese-cased', device='cuda')
-# model = SentenceTransformer('stsb-distilbert-base', device='cuda')
+# model = SentenceTransformer('paraphrase-xlm-r-multilingual-v1', device='cuda')
+# model = SentenceTransformer('paraphrase-distilroberta-base-v1', device='cuda')
 
 embeddings = model.encode(sentences, show_progress_bar=True)
 
