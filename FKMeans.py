@@ -55,8 +55,8 @@ class FaissKMeans:
                 
         
         # Run clustering
-        clus.train(X, index)
+        clus.train(X.astype(np.float32), index)
 
-        self.labels_ = index.search(X, 1)[1].reshape(-1)
+        self.labels_ = index.search(X.astype(np.float32), 1)[1].reshape(-1)
 
         self.kmeans = clus
