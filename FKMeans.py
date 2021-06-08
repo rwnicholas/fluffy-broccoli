@@ -11,21 +11,11 @@ class FaissKMeans:
         self.inertia_ = None
         self.labels_ = None
 
-    # def fit(self, X):
-    #     self.kmeans = faiss.Kmeans(d=X.shape[1],
-    #                                k=self.n_clusters,
-    #                                niter=self.max_iter,
-    #                                nredo=self.n_init)
-    #     self.kmeans.train(X.astype(np.float32))
-    #     self.cluster_centers_ = self.kmeans.centroids
-    #     self.inertia_ = self.kmeans.obj[-1]
-
     def predict(self, X):
         return self.kmeans.index.search(X.astype(np.float32), 1)[1]
 
-    def run_faiss_gpu(self, X, ngpu):
+    def fit(self, X, ngpu=2):
         # This code is based on https://github.com/facebookresearch/faiss/blob/master/benchs/kmeans_mnist.py
-        
         D = X.shape[1]
         clus = faiss.Clustering(D, self.n_clusters)
         
@@ -52,9 +42,7 @@ class FaissKMeans:
             index = faiss.IndexProxy()
             for sub_index in indexes:
                 index.addIndex(sub_index)
-                
-        
-        # Run clustering
+
         clus.train(X.astype(np.float32), index)
 
         self.labels_ = index.search(X.astype(np.float32), 1)[1].reshape(-1)

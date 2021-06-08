@@ -1,2 +1,4 @@
 
 __pycache__/
+data/crawl-300d-2M-subword.bin
+data/crawl-300d-2M-subword.vec
