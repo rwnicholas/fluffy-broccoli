@@ -1,16 +1,34 @@
 #!/usr/bin/python3
 
 from transformers import AutoTokenizer, AutoModel
+import torch
+import cluster
+import pandas as pd
+import gtinFixer as gtf
 
-sentences = ['Eu não amo o brasil, caralho, mas vivo aqui.']
+data = pd.read_csv("data/produtos.csv", dtype={'descp': str})
+data['gtin'] = data['gtin'].apply(lambda x: gtf.valida_gtin(str(x)))
+data['descp'] = data['descp'].apply(lambda x: cluster.preprocessing(x))
+data = data.dropna()
+data = data.reset_index(drop=True)
 
-tokenizer = AutoTokenizer.from_pretrained('neuralmind/bert-base-portuguese-cased')
-model = AutoModel.from_pretrained('neuralmind/bert-base-portuguese-cased')
+print("População:", data['gtin'].count())
 
-inputs = tokenizer(sentences, return_tensors="pt")
-outputs = model(**inputs)
+k = data['gtin'].nunique(dropna=True)
 
-for sentence, embedding in zip(sentences, outputs):
-    print("Sentence:", sentence)
-    print("Embedding:", embedding[0][0])
-    print(len(embedding))
+print("Número de Clusters:", k)
+#.to_numpy().reshape((-1,1))
+sentences = data['descp']
+print(sentences.to_numpy())
+
+# tokenizer = AutoTokenizer.from_pretrained('sentence-transformers/paraphrase-distilroberta-base-v2', do_lower_case=True)
+# model = AutoModel.from_pretrained('sentence-transformers/paraphrase-distilroberta-base-v2')
+
+# encoded_input = tokenizer(sentences, padding=True, truncation=True, return_tensors='pt')
+
+# #Compute token embeddings
+# with torch.no_grad():
+#     model_output = model(**encoded_input)
+#     embeddings = model_output[0][:,0] #Take the first token ([CLS]) from each sentence 
+
+# # cluster.clustering(k, embeddings, data)
