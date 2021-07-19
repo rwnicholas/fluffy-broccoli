@@ -18,8 +18,7 @@ print("Número de Clusters:", k)
 
 sentences = data['descp']
 
-model = SentenceTransformer('paraphrase-distilroberta-base-v2', device='cuda')
+model = SentenceTransformer('./paraphrase-distilroberta-base-sefaz', device='cuda')
 
 embeddings = model.encode(sentences, show_progress_bar=True)
-print(embeddings)
-# cluster.clustering(k, embeddings, data)
+cluster.gpu_clustering(k, embeddings, data)

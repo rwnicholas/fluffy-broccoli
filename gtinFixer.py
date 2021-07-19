@@ -16,7 +16,7 @@ def valida_gtin(gtin):
         resultado = prox_decimal - produto_escalar
         resultado = resultado % 10
         if str(resultado) == gtin[12]:
-            return int(gtin)
+            return str(gtin).zfill(13)
     return np.nan
 
 def gtin_14_para_13(gtin14):
