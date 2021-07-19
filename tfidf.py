@@ -24,4 +24,4 @@ sentences = data['descp']
 
 vectorizer = HashingVectorizer(n_features=2**12)
 response = vectorizer.transform(sentences)
-cluster.cpu_clustering(k, response.todense(), data)
+cluster.gpu_clustering(k, response.todense(), data)
