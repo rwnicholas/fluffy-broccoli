@@ -18,15 +18,15 @@ train_samples = []
 with open("data/products_similar.tsv", 'rt', encoding='utf8') as fIn:
     reader = csv.DictReader(fIn, delimiter='\t', quoting=csv.QUOTE_ALL)
     for row in reader:
-        inp_example = InputExample(texts=[row['sentence1'], row['sentence2']], label=0.9)
+        inp_example = InputExample(texts=[row['sentence1'], row['sentence2']], label=0.6)
         train_samples.append(inp_example)
 
-train_dataloader = DataLoader(train_samples, shuffle=True, batch_size=16)
+train_dataloader = DataLoader(train_samples, shuffle=True, batch_size=64)
 train_loss = losses.CosineSimilarityLoss(model=sbert_model)
 
 # Fine-tune the model
 sbert_model.fit(train_objectives=[(train_dataloader, train_loss)],
-                epochs=4,
-                scheduler='WarmupLinear',
-                warmup_steps=10000,
+                epochs=1,
+                scheduler='warmupcosine',
+                warmup_steps=10**9,
                 output_path='paraphrase-distilroberta-base-sefaz')

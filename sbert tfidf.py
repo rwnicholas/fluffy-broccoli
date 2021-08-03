@@ -14,7 +14,7 @@ def get_most_important(sentence):
     feature_array = np.array(tfidf_model.get_feature_names())
     tfidf_sorting = np.argsort(response.toarray()).flatten()[::-1]
 
-    n = 1
+    n = 3
     top_n = feature_array[tfidf_sorting][:n]
     return top_n
 
@@ -36,10 +36,10 @@ tfidf = tfidf_model.fit_transform(sentences)
 
 print("comecei")
 sentences = sentences.apply(lambda x: get_most_important(x))
-print("terminei")
+# print("terminei")
 
-model = SentenceTransformer('paraphrase-distilroberta-base-v2', device='cuda')
+# model = SentenceTransformer('paraphrase-distilroberta-base-v2', device='cuda')
 
-embeddings = model.encode(sentences, show_progress_bar=True)
+# embeddings = model.encode(sentences, show_progress_bar=True)
 
-cluster.gpu_clustering(k, embeddings, data)
+# cluster.gpu_clustering(k, embeddings, data)
