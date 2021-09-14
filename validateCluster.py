@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import pandas as pd
 import numpy as np
+from sklearn.metrics import homogeneity_score
 
 def accClusters(k):
     all_acc = 0
