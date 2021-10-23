@@ -5,7 +5,7 @@ import validateCluster as valCluster
 import os, glob
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import homogeneity_score
+from sklearn.metrics import precision_score, recall_score, f1_score, adjusted_rand_score, homogeneity_score
 from sklearn.preprocessing import LabelEncoder
 
 def preprocessing(text):
@@ -77,4 +77,10 @@ def __clustering(k, embeddings, data, kmeans_, keep_clusters):
         for f in files:
             os.remove(f)
 
-    return homogeneity_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_)
+    return adjusted_rand_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_)
+    
+    # {
+    #     'precision': precision_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_, average='macro'),
+    #     'recall': recall_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_, average='macro'),
+    #     'f1_score': f1_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_, average='macro')
+    # }
