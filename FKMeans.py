@@ -10,6 +10,7 @@ class FaissKMeans:
         self.cluster_centers_ = None
         self.inertia_ = None
         self.labels_ = None
+        self.obj = None
 
     def predict(self, X):
         return self.kmeans.index.search(X.astype(np.float32), 1)[1]
@@ -47,4 +48,10 @@ class FaissKMeans:
 
         self.labels_ = index.search(X.astype(np.float32), 1)[1].reshape(-1)
 
+        stats = clus.iteration_stats
+        stats = [stats.at(i) for i in range(stats.size())]
+        self.obj = np.array([st.obj for st in stats])
+
         self.kmeans = clus
+        self.inertia_ = self.obj[-1]
+        self.cluster_centers_ = self.kmeans.centroids
