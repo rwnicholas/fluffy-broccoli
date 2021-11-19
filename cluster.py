@@ -5,7 +5,7 @@ import validateCluster as valCluster
 import os, glob
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import precision_score, recall_score, f1_score, adjusted_rand_score, homogeneity_score
+from sklearn.metrics import precision_score, recall_score, f1_score, adjusted_rand_score, homogeneity_score, silhouette_score
 from sklearn.preprocessing import LabelEncoder
 
 def preprocessing(text):
@@ -24,8 +24,8 @@ def preprocessing(text):
     finalText = finalText.replace(".", " ")
     return text
 
-def find_k_elbow(k_, embeddings, _kmeans = FaissKMeans):
-    K = [*range(100, k_+(2*10**4), 5000)]
+def find_k(k_, embeddings, _kmeans = FaissKMeans):
+    K = [*range(500, (2*10**4), 500)]
     K.append(k_)
     K.sort()
 
@@ -34,14 +34,16 @@ def find_k_elbow(k_, embeddings, _kmeans = FaissKMeans):
     for k in K:
         clustering_model = _kmeans(n_clusters=k, n_init=1, max_iter=50)
         clustering_model.fit(embeddings)
-        inertias.append(clustering_model.inertia_)
+        labels = clustering_model.labels_
+        inertias.append(silhouette_score(embeddings, labels, metric = 'euclidean'))
         # print(k)
 
     plt.plot(K, inertias, 'bx-')
     plt.xlabel('Values of K')
-    plt.ylabel('Inertia')
-    plt.title('The Elbow Method using Inertia')
-    plt.savefig("elbow_graph.png")
+    plt.ylabel('Silhouette Score')
+    plt.title('The Silhouette Score')
+    plt.xticks(K, rotation=75, fontsize=10)
+    plt.savefig("silhouette.png")
     plt.close()
 
 def cpu_clustering(k_, embeddings_, data_, keep_clusters = False):
@@ -77,7 +79,7 @@ def __clustering(k, embeddings, data, kmeans_, keep_clusters):
         for f in files:
             os.remove(f)
 
-    return adjusted_rand_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_)
+    return homogeneity_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_)
     
     # {
     #     'precision': precision_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_, average='macro'),

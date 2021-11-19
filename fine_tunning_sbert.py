@@ -22,7 +22,8 @@ with open("data/products_similar.tsv", 'rt', encoding='utf8') as fIn:
         train_samples.append(inp_example)
 
 train_dataloader = DataLoader(train_samples, shuffle=True, batch_size=64)
-train_loss = losses.CosineSimilarityLoss(model=sbert_model)
+# train_loss = losses.CosineSimilarityLoss(model=sbert_model)
+train_loss = losses.MultipleNegativesRankingLoss(model=sbert_model)
 
 # Fine-tune the model
 sbert_model.fit(train_objectives=[(train_dataloader, train_loss)],
