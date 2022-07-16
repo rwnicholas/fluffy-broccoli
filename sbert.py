@@ -6,7 +6,7 @@ from sentence_transformers import SentenceTransformer
 import cluster
 import pandas as pd
 import gtinFixer as gtf
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import pickle
 import faiss
 
@@ -47,9 +47,9 @@ def testing(test_name):
 
         tmpDict = {
             'K Value': k_,
-            'precision': test['precision'],
-            'recall': test['recall'],
-            'f1_score': test['f1_score'],
+            'davies_bouldin': test['davies_bouldin'],
+            'dunn_index': test['dunn_index'],
+            'contingency_matrix': test['contingency_matrix'],
             'homogeneity': test['homogeneity'],
             'adjusted_rand': test['adjusted_rand'],
             'completeness': test['completeness'],
