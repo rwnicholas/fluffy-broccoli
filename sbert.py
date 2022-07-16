@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3.7
 
 from time import time
 from pandas.core.frame import DataFrame
@@ -7,6 +7,8 @@ import cluster
 import pandas as pd
 import gtinFixer as gtf
 import matplotlib.pyplot as plt
+import pickle
+import faiss
 
 data = pd.read_csv("data/produtos.csv")
 data['gtin'] = data['gtin'].apply(lambda x: gtf.valida_gtin(str(x)))
@@ -26,39 +28,38 @@ sentences = data['descp']
 model = SentenceTransformer('./paraphrase-distilroberta-base-sefaz', device='cuda')
 
 embeddings = model.encode(sentences, show_progress_bar=True)
-print(cluster.gpu_clustering(k, embeddings, data, keep_clusters=False))
+# clustering_model = cluster.gpu_clustering(k, embeddings, data, keep_clusters=False)
 
-# cluster.find_k(k, embeddings)
+def testing(test_name):
+    K = [*range(100, (1*10**5), 2500)]
+    K.append(k)
+    K.sort()
 
-# # Homogeneity Test
-# K = [*range(100, (2*10**4), 500)]
-# K.append(k)
-# # K.remove(80100)
-# K.sort()
-
-# homogeneity_all = []
-# time_all = []
-# savingDataList = []
+    test_all = []
+    time_all = []
+    savingDataList = []
 
 
-# for k_ in K:
-#     start = time()
+    for k_ in K:
+        start = time()
 
-#     homogeneity = cluster.gpu_clustering(k_, embeddings, data, keep_clusters=False)
-#     homogeneity_all.append(homogeneity)
+        test = cluster.gpu_clustering(k_, embeddings, data, keep_clusters=False)
 
-#     end = time()
+        tmpDict = {
+            'K Value': k_,
+            'precision': test['precision'],
+            'recall': test['recall'],
+            'f1_score': test['f1_score'],
+            'homogeneity': test['homogeneity'],
+            'adjusted_rand': test['adjusted_rand'],
+            'completeness': test['completeness'],
+            'v_measure': test['v_measure'],
+            'runtime': start - test['finalstamp']
+        }
+        savingDataList.append(tmpDict)
 
-#     run_time = end - start
-#     time_all.append(run_time)
+    # Saving results
+    savingDataframe = DataFrame(savingDataList)
+    savingDataframe.to_csv("data/"+test_name+"_results.csv", index=False)
 
-#     tmpDict = {
-#         'K Value': k_,
-#         'Homogeneity': homogeneity,
-#         'Runtime': run_time
-#     }
-#     savingDataList.append(tmpDict)
-
-# # Saving results
-# savingDataframe = DataFrame(savingDataList)
-# savingDataframe.to_csv("data/homogeneity_runtime_results_al.csv", index=False)
+testing('Many_tests')
