@@ -1,3 +1,4 @@
+from time import time
 import pandas as pd
 from FKMeans import FaissKMeans
 from sklearn.cluster import KMeans as skKMeans
@@ -5,7 +6,8 @@ import validateCluster as valCluster
 import os, glob
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import precision_score, recall_score, f1_score, adjusted_rand_score, homogeneity_score, silhouette_score
+from sklearn.metrics import adjusted_rand_score, homogeneity_score, silhouette_score, completeness_score, v_measure_score, davies_bouldin_score
+from sklearn.metrics.cluster import contingency_matrix
 from sklearn.preprocessing import LabelEncoder
 
 def preprocessing(text):
@@ -79,10 +81,18 @@ def __clustering(k, embeddings, data, kmeans_, keep_clusters):
         for f in files:
             os.remove(f)
 
-    return homogeneity_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_)
+    # return homogeneity_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_)
+    # return f1_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_, average='weighted')
+    # return accuracy_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_)
+    # return precision_recall_curve(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_)
     
-    # {
-    #     'precision': precision_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_, average='macro'),
-    #     'recall': recall_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_, average='macro'),
-    #     'f1_score': f1_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_, average='macro')
-    # }
+    return {
+        'finalstamp': time(),
+        'davies_bouldin': davies_bouldin_score(embeddings, clustering_model.labels_),
+        'dunn_index': 
+        'contingency_matrix': contingency_matrix(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_),
+        'homogeneity': homogeneity_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_),
+        'adjusted_rand': adjusted_rand_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_),
+        'completeness': completeness_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_),
+        'v_measure': v_measure_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_)
+    }
