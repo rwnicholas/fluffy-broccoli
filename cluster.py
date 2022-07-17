@@ -6,9 +6,11 @@ import validateCluster as valCluster
 import os, glob
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.metrics import pairwise_distances
 from sklearn.metrics import adjusted_rand_score, homogeneity_score, silhouette_score, completeness_score, v_measure_score, davies_bouldin_score
 from sklearn.metrics.cluster import contingency_matrix
 from sklearn.preprocessing import LabelEncoder
+from validclust import dunn
 
 def preprocessing(text):
     # unitData = ['gr', 'g', 'grama', 'gramas', 'kg', 'kgs', 'quilo', 'quilos', 'quilograma', 'quilogramas', 'kilo', 'kilos', 'kilograma', 'kilogramas', 'm', 'metro', 'metros', 'cm', 'centímetro', 'centimetro', 'l', 'litro', 'litros', 'ml', 'mililitros', 'caixa', 'caixas', 'cx', 'cxs', 'balde', 'baldes', 'sache', 'pacote', 'pacotes', 'pc', 'pct', 'pcs', 'pcts', 'c/', 'com', 'folha', 'folhas', 'fl', 'fls', 'sachê', 'saches', 'sachês', 'envelope', 'envelopes', 'env', 'envs', 'saco', 'sacos', 'un', 'qtd', 'und', 'cxt']
@@ -85,11 +87,12 @@ def __clustering(k, embeddings, data, kmeans_, keep_clusters):
     # return f1_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_, average='weighted')
     # return accuracy_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_)
     # return precision_recall_curve(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_)
-    
+    dist = pairwise_distances(embeddings)
+
     return {
         'finalstamp': time(),
         'davies_bouldin': davies_bouldin_score(embeddings, clustering_model.labels_),
-        'dunn_index': 
+        'dunn_index': dunn(dist, clustering_model.labels_),
         'contingency_matrix': contingency_matrix(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_),
         'homogeneity': homogeneity_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_),
         'adjusted_rand': adjusted_rand_score(LabelEncoder().fit_transform(data['gtin']), clustering_model.labels_),

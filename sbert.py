@@ -10,7 +10,7 @@ import gtinFixer as gtf
 import pickle
 import faiss
 
-data = pd.read_csv("data/produtos.csv")
+data = pd.read_csv("data/produtos_ecoal.csv")
 data['gtin'] = data['gtin'].apply(lambda x: gtf.valida_gtin(str(x)))
 data = data.dropna()
 data = data.reset_index(drop=True)
@@ -31,7 +31,7 @@ embeddings = model.encode(sentences, show_progress_bar=True)
 # clustering_model = cluster.gpu_clustering(k, embeddings, data, keep_clusters=False)
 
 def testing(test_name):
-    K = [*range(100, (1*10**5), 2500)]
+    K = [*range(100, (data['gtin'].count()), 500)]
     K.append(k)
     K.sort()
 
@@ -60,6 +60,6 @@ def testing(test_name):
 
     # Saving results
     savingDataframe = DataFrame(savingDataList)
-    savingDataframe.to_csv("data/"+test_name+"_results.csv", index=False)
+    savingDataframe.to_csv("data/"+test_name+"_results.csv", index=False, sep='|')
 
 testing('Many_tests')
