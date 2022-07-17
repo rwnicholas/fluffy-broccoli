@@ -31,7 +31,8 @@ embeddings = model.encode(sentences, show_progress_bar=True)
 # clustering_model = cluster.gpu_clustering(k, embeddings, data, keep_clusters=False)
 
 def testing(test_name):
-    K = [*range(100, (data['gtin'].count()), 500)]
+    K = [*range(0, (data['gtin'].count()), 500)]
+    K.pop(0)
     K.append(k)
     K.sort()
 
@@ -54,12 +55,12 @@ def testing(test_name):
             'adjusted_rand': test['adjusted_rand'],
             'completeness': test['completeness'],
             'v_measure': test['v_measure'],
-            'runtime': start - test['finalstamp']
+            'runtime': test['finalstamp'] - start
         }
         savingDataList.append(tmpDict)
 
     # Saving results
     savingDataframe = DataFrame(savingDataList)
-    savingDataframe.to_csv("data/"+test_name+"_results.csv", index=False, sep='|')
+    savingDataframe.to_pickle("data/"+test_name+"_results.pkl")
 
 testing('Many_tests')
