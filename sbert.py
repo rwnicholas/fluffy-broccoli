@@ -31,8 +31,7 @@ embeddings = model.encode(sentences, show_progress_bar=True)
 # clustering_model = cluster.gpu_clustering(k, embeddings, data, keep_clusters=False)
 
 def testing(test_name):
-    K = [*range(0, (data['gtin'].count()), 500)]
-    K.pop(0)
+    K = [*range(1000, (16000), 500)]
     K.append(k)
     K.sort()
 
@@ -43,24 +42,24 @@ def testing(test_name):
 
     for k_ in K:
         start = time()
+        try:
+            test = cluster.gpu_clustering(k_, embeddings, data, keep_clusters=False)
 
-        test = cluster.gpu_clustering(k_, embeddings, data, keep_clusters=False)
-
-        tmpDict = {
-            'K Value': k_,
-            'davies_bouldin': test['davies_bouldin'],
-            'dunn_index': test['dunn_index'],
-            'contingency_matrix': test['contingency_matrix'],
-            'homogeneity': test['homogeneity'],
-            'adjusted_rand': test['adjusted_rand'],
-            'completeness': test['completeness'],
-            'v_measure': test['v_measure'],
-            'runtime': test['finalstamp'] - start
-        }
-        savingDataList.append(tmpDict)
-
-    # Saving results
-    savingDataframe = DataFrame(savingDataList)
-    savingDataframe.to_pickle("data/"+test_name+"_results.pkl")
+            tmpDict = {
+                'K Value': k_,
+                'davies_bouldin': test['davies_bouldin'],
+                'dunn_index': test['dunn_index'],
+                'contingency_matrix': test['contingency_matrix'],
+                'homogeneity': test['homogeneity'],
+                'adjusted_rand': test['adjusted_rand'],
+                'completeness': test['completeness'],
+                'v_measure': test['v_measure'],
+                'runtime': test['finalstamp'] - start
+            }
+            savingDataList.append(tmpDict)
+        finally:
+            # Saving results
+            savingDataframe = DataFrame(savingDataList)
+            savingDataframe.to_pickle("data/"+test_name+"_results.pkl")
 
 testing('Many_tests')
